@@ -1,185 +1,139 @@
-const rotateRightButton = document.getElementById("rotate-right");
-const rotateLeftButton = document.getElementById("rotate-left");
-const scaleXButton = document.getElementById("scale-X-button");
-const scaleYButton = document.getElementById("scale-Y-button");
-const options = document.querySelector(".options-btn");
-const filterValue = document.querySelector(".filter-info .value");
-const filterSlider = document.querySelector(".slider input");
-const resetFilterBtn = document.querySelector(".reset-filter");
-const filterOptions = document.querySelectorAll(".crop button, .ratio button");
-const dropArea = document.querySelector(".image-container");
-const dragText = dropArea.querySelector("h6");
-const button = dropArea.querySelector("button");
-let fileInput = document.getElementById("file");
-let image = document.getElementById("image");
-let downloadButton = document.getElementById("download");
-let RatioBtns = document.querySelectorAll(".ratio button");
-let CropBtns = document.querySelectorAll(".crop button");
-let cropper = "";
-let fileName = "";
-let scaleXClick = false,
-  scaleYClick = false;
-let rotateRightValue = 45,
-  rotateLeftValue = -45;
-let initialValue = 0;
-var slider = document.querySelector('.margins');
+<!DOCTYPE html>
+<html lang="en">
 
-button.onclick = ()=>{
-  fileInput.click(); 
-}
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Picsize</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link 
+      rel="stylesheet" 
+      href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+    />
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+  </head>
 
-fileInput.onchange = () => {
-  let reader = new FileReader();
-  reader.readAsDataURL(fileInput.files[0]);
-  reader.onload = () => {
-    image.setAttribute("src", reader.result);
-    if (cropper) {
-      cropper.destroy();
-    }
-    cropper = new Cropper(image, {
-      responsive: true,
-      restore: true,
-      scalable: true,
-      wheelZoomRatio: 0.01,
-      cropBoxResizable: true,
-      cropBoxMovable: true,
-      dragMode: 'move',
-      toggleDragModeOnDblclick: true,
-      zoomOnTouch: true,
-      zoomOnWheel: true,
-      autoCropArea : 1,
-    });
-  };
-  fileName = fileInput.files[0].name.split(".")[0];
-  document.querySelector(".drag-image").hidden = true;
-  document.querySelector(".container").classList.remove("disable");
-};
+  <body>
 
-dropArea.addEventListener("dragover", (event)=>{
-  event.preventDefault();
-  dropArea.classList.add("active");
-  dragText.textContent = "Release to Upload File";
-});
+    <section class="top-nav">
+      <div>
+        Picsize
+      </div>
+      <input id="menu-toggle" type="checkbox"/>
+      <label class='menu-button-container' for="menu-toggle">
+      <div class='menu-button'></div>
+    </label>
+      <ul class="menu">
+        <li>What is it?</li>
+        <li>Why using it?</li>
+        <li>Login</li>
+      </ul>
+    </section><br><br><br><br><br>
 
-dropArea.addEventListener("dragleave", ()=>{
-  dropArea.classList.remove("active");
-  dragText.textContent = "Drag & Drop to Upload File";
-}); 
+    <section class="container disable">
+      <div class="wrapper">     
+        <div class="editor-container">  
+            <div class="options-btn">
+              <label class="title"><center>Rotate & Flip</center></label>
+                <div class="rotate">
+                  <button id="rotate-left">
+                    <i class="fa-solid fa-rotate-left"></i>
+                  </button>
+                  <button id="rotate-right">
+                    <i class="fa-solid fa-rotate-right"></i>
+                  </button>
+                  <button id="scale-X-button">
+                    <i class='bx bx-reflect-vertical'></i>
+                  </button>
+                  <button id="scale-Y-button">
+                    <i class='bx bx-reflect-horizontal'></i>
+                  </button>
+                </div>
+              <label class="title"><center>Ratio & Crop</center></label>
+                <div class="ratio">
+                  <button id="16:9">16:9</button>
+                  <button id="4:3">4:3</button>
+                  <button id="3:2">3:2</button>
+                  <button id="1:1">1:1</button>
+                  <button id="Free" class="active">Free</button>
+                </div>
+                <div class="crop">
+                  <button id="auto-crop">Auto-Crop</button>
+                  <button id="manual-crop">Manual-Crop</button>
+                </div>
+              <label class="title"><center>Margins</center></label>
+                <div class="slider">
+                  <div class="filter-info">
+                    <p class="value">0%</p>
+                  </div>
+                  <input type="range" id="myInput" class="margins" value="0" min="0" max="100" step="1">
+                </div>
+            </div>
+        </div>
+        <div class="image-container">
+          <div class="drag-image">
+            <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h6>Drag & Drop File Here</h6>
+            <span>OR</span>
+            <center><button>Browse File</button></center>
+          </div>
+          <img id="image" hidden/>
+          <input type="file" id="file" accept="image/* "class="file" hidden/>
+          <label for="file"></label>
+        </div>
+      </div>
+      <div class="action-btns">
+        <button id="reset-filter" class="reset-filter">Reset Filters</button>
+        <a href="" id="download">Download</a>
+      </div>
+    </section><br><br><br><br><br><br><br><br><br>
 
-dropArea.addEventListener("drop", (event)=>{
-  let reader = new FileReader();
-  reader.readAsDataURL(fileInput.files[0]);
-  reader.onload = () => {
-    image.setAttribute("src", reader.result);
-    if (cropper) {
-      cropper.destroy();
-    }
-    cropper = new Cropper(image, {
-      responsive: true,
-      restore: true,
-      scalable: true,
-      wheelZoomRatio: 0.1,
-      cropBoxResizable: true,
-      cropBoxMovable: true,
-      dragMode: 'move',
-      toggleDragModeOnDblclick: true,
-      zoomOnTouch: true,
-      zoomOnWheel: true,
-      autoCropArea : 1,
-    });
-  };
-  fileName = fileInput.files[0].name.split(".")[0];
-  document.querySelector(".drag-image").hidden = true;
-  document.querySelector(".container").classList.remove("disable");
-});
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+        <div class="wave" id="wave4"></div>
+      </div>
+      <ul class="social-icon">
+        <li class="social-icon__item"><a class="social-icon__link" href="#">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="#">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="#">
+            <ion-icon name="logo-linkedin"></ion-icon>
+          </a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="#">
+            <ion-icon name="logo-instagram"></ion-icon>
+          </a></li>
+      </ul>
+      <ul class="menu">
+        <li class="menu__item"><a class="menu__link" href="#">Home</a></li>
+        <li class="menu__item"><a class="menu__link" href="#">About</a></li>
+        <li class="menu__item"><a class="menu__link" href="#">Prizes</a></li>
+        <li class="menu__item"><a class="menu__link" href="#">Contact</a></li>
 
-//reste à régler le drop//
+      </ul>
+      <p>&copy;2023 Antoine Floure | All Rights Reserved</p>
+    </footer>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
-filterOptions.forEach(option => {
-  option.addEventListener("click", () => {
-    document.querySelector(".active").classList.remove("active");
-    option.classList.add("active");
-  });
-});
+<script src="javascript.js"></script>
 
-rotateRightButton.addEventListener("click", () => {
-  cropper.rotate(rotateRightValue);
-});
+  </body>
 
-rotateLeftButton.addEventListener("click", () => {
-  cropper.rotate(rotateLeftValue);
-});
-
-scaleXButton.addEventListener("click", () => {
-  if (scaleXClick) {
-    cropper.scaleX(1);
-    scaleXClick = false;
-  } else {
-    cropper.scaleX(-1);
-    scaleXClick = true;
-  }
-});
-
-scaleYButton.addEventListener("click", () => {
-  if (scaleYClick) {
-    cropper.scaleY(1);
-    scaleYClick = false;
-  } else {
-    cropper.scaleY(-1);
-    scaleYClick = true;
-  }
-});
-
-RatioBtns.forEach((element) => {
-  element.addEventListener("click", () => {
-    if (element.innerText == "Free") {
-      cropper.setAspectRatio(NaN);
-    } else {
-      cropper.setAspectRatio(eval(element.innerText.replace(":", "/")));
-    }
-  });
-});
-
-CropBtns.forEach((element) => {
-  element.addEventListener("click", () => {
-
-    if (element.innerText == "Auto-Crop") {
-    } else {
-    }
-  });
-});
-
-//reste à faire l'auto-crop et le manual-crop//
-
-const updateFilter =() => {
-  filterValue.innerText = `${filterSlider.value}%`;
-  let margins = filterSlider.value;
-}
-filterSlider.addEventListener("input",updateFilter);
-filterSlider.onchange = () => {
-  const currentValue = Number(filterSlider.value);
-    cropper.zoom(0.01 * (initialValue - currentValue));
-    initialValue = currentValue;
-};
-
-downloadButton.addEventListener("click", (e) => {
-  let imgSrc = cropper.getCroppedCanvas({}).toDataURL();
-  downloadButton.download = `cropped_${fileName}.png`;
-  downloadButton.setAttribute("href", imgSrc);
-});
-
-const resetFilter = () => {
-  cropper.zoom(0.01 * (filterSlider.value));
-  cropper.setAspectRatio(NaN);
-  document.querySelector(".active").classList.remove("active");
-  document.getElementById("Free").classList.add("active");
-  cropper.scaleX(1);
-  cropper.scaleY(1);
-  cropper.rotate();
-  initialValue = 0;
-  filterSlider.value = 0;
-  filterValue.innerText = `${filterSlider.value}%`;
-}
-resetFilterBtn.addEventListener("click", resetFilter);
-
-//reste à reset les rotations//
+</html>
